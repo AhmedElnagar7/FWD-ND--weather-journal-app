@@ -25,7 +25,7 @@ app.use(express.static('website'));
 // Callback function to complete GET '/all'
 const getAll= (req, res) => res.send(projectData);
 // Get route
-app.get("/all", getAll);
+app.get("/allData", getAll);
 
 // Callback function to complete POST  '/add'
 const postData = (req, res) => {
@@ -35,7 +35,7 @@ const postData = (req, res) => {
 }
 
 // Get route
-app.post("/add", postData);
+app.post("/addData", postData);
 
 const port = 8000;
 

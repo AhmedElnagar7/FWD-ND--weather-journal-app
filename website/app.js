@@ -1,6 +1,12 @@
 /* Global Variables */
 
-// const { json } = require("stream/consumers");
+// select our element
+const htmlBtn = document.getElementById('generate');
+const htmlEntry = document.getElementById("entry");
+const htmlDate = document.getElementById("date");
+const htmlCity = document.getElementById("city");
+const htmlTemp = document.getElementById("myTemp");
+const htmlFeel = document.getElementById("feeling");
 
 // Create a new date instance dynamically with JS
 let mDate = new Date();
@@ -14,7 +20,7 @@ const mainUrl = "https://api.openweathermap.org/data/2.5/weather?zip=";
 const myKey = ",&appid=8f080f38af862779a9bcf7ae827b1afc&units=metric"
 
 // our server
-const myServer = "http://localhost:8000";
+const ourServer = "http://localhost:8000";
 
 // error for user
 const err = document.getElementById("err");
@@ -23,30 +29,17 @@ const err = document.getElementById("err");
 
 const generateOurData=() => {
   const myZip = document.getElementById("zip").value;
-  const feel = document.getElementById("feel").value;
+  const myFeel = document.getElementById("feel").value;
 
-  weatherData(myZip)
+  ourWeatherData(myZip)
   .then((data)=>{
-    if (data) {
-      const {
-        main: { temp },
-        name: city,
-        // weather: [{ description }],
-      }= data;
-
-      const inf = {
-        myDate,
-        city,
-        temp: Math.round(temp),
-        feel,
-      };
-
-      postNewData(myServer+"/add", inf);
-      updateMyUi();
-      document.getElementById("entry").style.opacity = 1;
-    }
+      const { main: { temp }, name: myCity,} = data;
+      const inf = {myDate, myCity, myTemp: Math.round(temp), myFeel,};
+      postNewData(ourServer+"/addData", inf);
+      myUi();
   })
 };
+
 
 // Function to post data
 const postNewData = async (url = "", inf = {}) => {
@@ -68,10 +61,11 @@ const postNewData = async (url = "", inf = {}) => {
 };
 
 // btn event
-document.getElementById('generate').addEventListener('click', generateOurData);
+htmlBtn.addEventListener('click', generateOurData);
+
 
 // function to get API data
-const weatherData = async (myZip) => {
+const ourWeatherData = async (myZip) => {
   try{
     const res = await fetch(mainUrl+myZip+myKey);
     const data = await res.json();
@@ -88,17 +82,12 @@ const weatherData = async (myZip) => {
 };
 
 // Function to get data and update ui
-const updateMyUi = async () => {
-  const res = await fetch(myServer+ "/all");
-  try{
-    const dataSaved = await res.json();
-
-    document.getElementById("date").innerHTML = dataSaved.myDate;
-    document.getElementById("city").innerHTML = dataSaved.city;
-    // document.getElementById("descrip").innerHTML = dataSaved.description;
-    document.getElementById("myTemp").innerHTML = dataSaved.temp + "&degC";
-    document.getElementById("feeling").innerHTML = dataSaved.feel;
-  }catch(error){
-    console.log(error);
-  }
+const myUi = async (res, dataSaved) => {
+    res = await fetch(ourServer + "/allData");
+    dataSaved = await res.json();
+    htmlDate.innerHTML = dataSaved.myDate;
+    htmlCity.innerHTML = dataSaved.myCity;
+    htmlTemp.innerHTML = dataSaved.myTemp + "&degC";
+    htmlFeel.innerHTML = dataSaved.myFeel;
+    htmlEntry.style.opacity = 1;
 };
